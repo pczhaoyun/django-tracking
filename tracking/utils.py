@@ -1,9 +1,11 @@
-from django.conf import settings
 import re
 import unicodedata
 
+from django.conf import settings
+
 # this is not intended to be an all-knowing IP address regex
 IP_RE = re.compile('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}')
+
 
 def get_ip(request):
     """
@@ -33,6 +35,7 @@ def get_ip(request):
 
     return ip_address
 
+
 def get_timeout():
     """
     Gets any specified timeout from the settings file, or use 10 minutes by
@@ -40,12 +43,14 @@ def get_timeout():
     """
     return getattr(settings, 'TRACKING_TIMEOUT', 10)
 
+
 def get_cleanup_timeout():
     """
     Gets any specified visitor clean-up timeout from the settings file, or
     use 24 hours by default
     """
     return getattr(settings, 'TRACKING_CLEANUP_TIMEOUT', 24)
+
 
 def u_clean(s):
     """A strange attempt at cleaning up unicode"""
@@ -68,4 +73,3 @@ def u_clean(s):
                         uni += '-'
 
     return uni.encode('ascii', 'xmlcharrefreplace')
-

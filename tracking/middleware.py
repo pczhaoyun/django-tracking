@@ -1,16 +1,16 @@
-from datetime import timedelta
-from django.utils import timezone
 import logging
 import re
 import traceback
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 from django.core.cache import cache
 from django.core.urlresolvers import reverse, NoReverseMatch
+from django.db import transaction
 from django.db.utils import DatabaseError, IntegrityError
 from django.http import Http404
-from django.db import transaction
+from django.utils import timezone
 
 from tracking import utils
 from tracking.models import Visitor, UntrackedUserAgent, BannedIP
@@ -89,7 +89,7 @@ class VisitorTrackingMiddleware(object):
 
         # if we get here, the URL needs to be tracked
         # determine what time it is
-        now=timezone.localtime(timezone.now())
+        now = timezone.localtime(timezone.now())
 
         attrs = {
             'session_key': session_key,
@@ -151,6 +151,7 @@ class VisitorTrackingMiddleware(object):
         except DatabaseError:
             log.error('There was a problem saving visitor information:\n%s\n\n%s' % (traceback.format_exc(), locals()))
 
+
 class VisitorCleanUpMiddleware:
     """Clean up old visitor tracking records in the database"""
 
@@ -161,6 +162,7 @@ class VisitorCleanUpMiddleware:
             log.debug('Cleaning up visitors older than %s hours' % timeout)
             timeout = timezone.localtime(timezone.now()) - timedelta(hours=int(timeout))
             Visitor.objects.filter(last_update__lte=timeout).delete()
+
 
 class BannedIPMiddleware:
     """
